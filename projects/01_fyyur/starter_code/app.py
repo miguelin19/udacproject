@@ -9,6 +9,7 @@ from datetime import *
 import dateutil.parser
 import babel
 import sys
+from sqlalchemy import func
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -96,28 +97,33 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data)
+  # data=[{
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "venues": [{
+  #     "id": 1,
+  #     "name": "The Musical Hop",
+  #     "num_upcoming_shows": 0,
+  #   }, {
+  #     "id": 3,
+  #     "name": "Park Square Live Music & Coffee",
+  #     "num_upcoming_shows": 1,
+  #   }]
+  # }, {
+  #   "city": "New York",
+  #   "state": "NY",
+  #   "venues": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }]
+  areas = db.session.query(Venue.city, Venue.state).order_by(Venue.city).distinct()
+  venues= Venue.query.all()
+  # example = db.session.query(Show.venue_id, func.count(Show.venue_id)).group_by(Show.venue_id)
+  # venues = Venue.query.join(Show).add_columns(example).label('num_upcoming_shows').all()
+  
+  return render_template('pages/venues.html', areas=areas, venues=venues)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -133,7 +139,10 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
-  return render_template('pages/show_venue.html', venue=Venue.query.get(venue_id))
+  now = datetime.today()
+  past_shows = Show.query.filter(Show.venue_id == venue_id, Show.start_time < now ).all()
+  upcoming_shows = Show.query.filter(Show.venue_id == venue_id, Show.start_time > now ).all()
+  return render_template('pages/show_venue.html', venue=Venue.query.get(venue_id),past_shows = past_shows, upcoming_shows = upcoming_shows)
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -155,7 +164,12 @@ def create_venue_submission():
     phone = form.phone.data
     facebook_link = form.facebook_link.data
     genres = form.genres.data
-    venue = Venue(name=name, city=city, state=state, address=address, phone=phone, facebook_link=facebook_link, genres=genres)
+    image_link = form.image_link.data
+    website = form.website.data
+    seeking_talent = form.seeking_talent.data
+    seeking_description = form.seeking_description.data
+    venue = Venue(name=name, city=city, state=state, address=address, phone=phone, facebook_link=facebook_link, genres=genres,
+                  image_link=image_link, website=website, seeking_talent=bool(seeking_talent), seeking_description=seeking_description)
     db.session.add(venue)
     db.session.commit()
   # on successful db insert, flash success
@@ -275,7 +289,12 @@ def create_artist_submission():
     phone = form.phone.data
     facebook_link = form.facebook_link.data
     genres = form.genres.data
-    artist = Artist(name=name, city=city, state=state, phone=phone, facebook_link=facebook_link, genres=genres)
+    image_link = form.image_link.data
+    website = form.website.data
+    seeking_venue = form.seeking_venue.data
+    seeking_description = form.seeking_description.data
+    artist = Artist(name=name, city=city, state=state, phone=phone, facebook_link=facebook_link, genres=genres,
+    image_link=image_link, website=website, seeking_venue=bool(seeking_venue), seeking_description=seeking_description)
     db.session.add(artist)
     db.session.commit()
   # TODO: modify data to be the data object returned from db insertion
@@ -353,6 +372,8 @@ def create_show_submission():
     artist_id = form.artist_id.data
     venue_id = form.venue_id.data
     start_time = form.start_time.data
+    if not start_time:
+      flash('Wrong time format')
     artist = Artist(id = artist_id)
     show = Show(venue_id = venue_id, artist_id = artist_id, start_time = start_time)
     db.session.add(show)
