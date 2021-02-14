@@ -10,9 +10,11 @@
 			ID: {{ venue.id }}
 		</p>
 		<div class="genres">
-			{% for genre in venue.genres %}
-			<span class="genre">{{ genre }}</span>
-			{% endfor %}
+			{% if venue.genres is not none %}
+				{% for genre in venue.genres %}
+				<span class="genre">{{ genre }}</span>
+				{% endfor %}
+			{% endif %}
 		</div>
 		<p>
 			<i class="fas fa-globe-americas"></i> {{ venue.city }}, {{ venue.state }}
@@ -47,13 +49,13 @@
 	</div>
 </div>
 <section>
-	<h2 class="monospace">{{ venue.upcoming_shows_count }} Upcoming {% if venue.upcoming_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+	<h2 class="monospace">{{ u_shows }} Upcoming {% if u_shows == 1 %}Show{% else %}Shows{% endif %}</h2>
 	<div class="row">
 		{%for show in upcoming_shows %}
 		<div class="col-sm-4">
 			<div class="tile tile-show">
 				<img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
-				<h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
+				<h5><a href="/artists/{{ show.artist_id }}">{{ show._artist.name }}</a></h5>
 				<h6>{{ show.start_time }}</h6>
 			</div>
 		</div>
@@ -61,13 +63,13 @@
 	</div>
 </section>
 <section>
-	<h2 class="monospace">{{ venue.past_shows_count }} Past {% if venue.past_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+	<h2 class="monospace">{{ p_shows }} Past {% if p_shows == 1 %}Show{% else %}Shows{% endif %}</h2>
 	<div class="row">
 		{%for show in past_shows %}
 		<div class="col-sm-4">
 			<div class="tile tile-show">
 				<img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
-				<h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
+				<h5><a href="/artists/{{ show.artist_id }}">{{ show._artist.name }}</a></h5>
 				<h6>{{ show.start_time }}</h6>
 			</div>
 		</div>

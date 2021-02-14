@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, AnyOf, URL
 class ShowForm(Form):
     artist_id = StringField(
         'artist_id',
-        validators=[DataRequired('what is it now')]
+        validators=[DataRequired()]
     )
     venue_id = StringField(
         'venue_id',
@@ -125,7 +125,7 @@ class VenueForm(Form):
         'seeking_talent', validators=[DataRequired()],
         choices=[
             ('True', 'True'),
-            ('', 'False'),
+            ('', 'False')
         ]
     )
     seeking_description = StringField(
@@ -238,7 +238,7 @@ class ArtistForm(Form):
         'seeking_venue', validators=[DataRequired()],
         choices=[
             ('True', 'True'),
-            ('', 'False'),
+            ('', 'False')
         ]
     )
     seeking_description = StringField(
