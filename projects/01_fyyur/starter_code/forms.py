@@ -2,7 +2,7 @@ from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, ValidationError
 from wtforms.fields.html5 import  URLField, DateTimeField
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import DataRequired, AnyOf, URL, Regexp, Optional
 
 class ShowForm(Form):
     artist_id = StringField(
@@ -87,7 +87,7 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone', validators=[Regexp(r'^[0-9\-\+]+$', message='Enter a valid phone please'), DataRequired()]
     )
     image_link = StringField(
         'image_link'
@@ -132,7 +132,7 @@ class VenueForm(Form):
         'seeking_description'
     )
     website = URLField(
-        'website', validators=[URL(message='Enter Valid URL Please.')]
+        'website', validators=[Optional(), URL(message='Enter Valid URL Please.')]
     )
 
 class ArtistForm(Form):
@@ -200,7 +200,7 @@ class ArtistForm(Form):
     )
     phone = StringField(
         # TODO implement validation logic for state
-        'phone'
+        'phone', validators=[Regexp(r'^[0-9\-\+]+$', message='Enter a valid phone please'), DataRequired()]
     )
     image_link = StringField(
         'image_link'
@@ -245,7 +245,7 @@ class ArtistForm(Form):
         'seeking_description'
     )
     website = URLField(
-        'website', validators=[URL(message='Enter Valid URL Please.')]
+        'website', validators=[Optional(), URL(message='Enter Valid URL Please.')]
     )
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
