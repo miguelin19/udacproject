@@ -42,7 +42,7 @@ class QuizView extends Component {
   handleChange = (event) => {
     this.setState({[event.target.name]: event.target.value})
   }
-
+  
   getNextQuestion = () => {
     const previousQuestions = [...this.state.previousQuestions]
     if(this.state.currentQuestion.id) { previousQuestions.push(this.state.currentQuestion.id) }

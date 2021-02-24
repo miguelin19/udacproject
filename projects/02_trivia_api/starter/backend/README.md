@@ -72,20 +72,126 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/questions'
+GET '/categories/<int:cat_id>/questions'
+POST '/questions'
+POST '/questions/search'
+POST '/quizzes'
+DELETE '/questions/<int:question_id>'
 
 GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Returns: A dictionary with success value, total number of categories, and an object with a single key, categories, that contains a object of id: category_string key:value pairs. 
+{
+'sucess':true,
+'total_categories':6,
+'categories':{'1' : "Science",
+	'2' : "Art",
+	'3' : "Geography",
+	'4' : "History",
+	'5' : "Entertainment",
+	'6' : "Sports"}
+}
+
+GET '/questions'
+- Request arguments: page=int, example:'/questions?page=1'
+- Results are paginated in groups of 10.
+- Returns: A dictionary with the success value, total number of questions, an object questions with all the questions (as dictionaries as shown below) corresponding to the 'page'
+ request argument and an object with all the categories as well as the current category.
+{
+'success':True, 
+'questions' : [{
+      'id': 1,
+      'question': 'why',
+      'answer': 'why not',
+      'category': '1',
+      'difficulty':'5'
+    }],
+'total_questions' : 15,
+'categories':{'1' : "Science",
+	'2' : "Art",
+	'3' : "Geography",
+	'4' : "History",
+	'5' : "Entertainment",
+	'6' : "Sports"},
+'current_category': None
+      }
+
+GET '/categories/<int:cat_id>/questions'
+- Request arguments: None
+- Returns: A dictionary with success value,number of total questions in the category with id=cat_id, current category and an object questions with all the questions corresponding to the 
+category.
+example:'/categories/2/questions'
+{
+'success':True,
+'questions':[{
+      'id': 1,
+      'question': 'why',
+      'answer': 'why not',
+      'category': '2',
+      'difficulty':'5'
+    }],
+'total_questions':1,
+'current_category': '2'
+      }
+
+POST '/questions'
+- Request arguments: json containing question,answer,category,difficulty with their respective values
+- Creates a new question in the database with the specified question,answer,category and difficulty
+- Returns: A dictionary with success value, total number of questions, created question id and an object with the questions corresponding to the 'page' request argument (by default 1)
+as expalined in GET '/questions'.
+{
+'success':True,
+'created': 1,
+'questions': [{
+      'id': 1,
+      'question': 'why',
+      'answer': 'why not',
+      'category': '1',
+      'difficulty':'5'
+    }],
+'total_questions' : len(selection)
+	}
+
+POST '/questions/search'
+-Request arguments: search=str, example:'/questions/search?search="why"'
+- Returns: A dictionary with success value, total number of questions matching the search term, current category and an object questions with containing all the questions that match
+the search.
+{
+'success':True,
+'total_questions':1,
+'questions':[{
+      'id': 1,
+      'question': 'why',
+      'answer': 'why not',
+      'category': '1',
+      'difficulty':'5'
+    }],
+'current_category':None
+    }
+
+POST '/quizzes'
+- Request arguments: None
+- Returns: A dictionary with success value and the question (as a dict) to be shown to the player.
+{
+'success':True,
+'question': {
+      'id': 1,
+      'question': 'why',
+      'answer': 'why not',
+      'category': '1',
+      'difficulty':'5'
+    }
+ }
+DELETE '/questions/<int:question_id>'
+- Request arguments: None
+- Returns: A dictionary with success value, deleted question id, total number of remaining questions and an object with the remaining questions. 
+{
+'success':True,
+'deleted':1,
+'questions': [],
+'total_questions': 0
+    }
 
 ```
 
