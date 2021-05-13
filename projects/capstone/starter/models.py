@@ -1,7 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Enum
 # from sqlalchemy.dialects.postgresql import ENUM
+
 db=SQLAlchemy()
+
+database_path = os.environ['DATABASE_URL']
+
+#setup db
+
+def setup_db(app, database_path=database_path):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db.app = app
+    db.init_app(app)
+    db.create_all()
 
 #Models
 #-----------------------------------------------------
@@ -55,11 +67,3 @@ class Actor(db.Model):
             'age' : self.age,
             'gender' : self.gender
         }
-
-# class Casting(db.Model):
-#     __tablename__ = 'Casting'
-#     movie_id = db.Column(db.Integer, db.ForeignKey('Movie.id'), primary_key=True)
-#     actor_id = db.Column(db.Integer, db.ForeignKey('Actor.id'), primary_key=True)
-#     main_role = db.Column(db.Boolean, default=False)
-#     _movie = db.relationship('Movie', back_populates='actors')
-#     _actor = db.relationship('Actor', back_populates='movies')
